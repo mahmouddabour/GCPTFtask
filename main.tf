@@ -176,24 +176,17 @@ resource "google_service_account" "bqowner" {
 
 data "google_iam_policy" "admin" {
   binding {
-    role = "roles/compute.instances.admin"
-
-    members = []
+    role = "roles/compute.osLogin"
+    members =["serviceAccount:dabournti@dabournti.iam.gserviceaccount.com",]
   }
 }
 
-resource "google_service_account" "sa" {
-  account_id   = "dabournti3"
-  display_name = "A service account that only Jane can interact with"
+resource "google_compute_instance_iam_policy" "policy" {
+  project = google_compute_instance.default.project
+  zone = google_compute_instance.default.zone
+  instance_name = google_compute_instance.default.name
+  policy_data = data.google_iam_policy.admin.policy_data
 }
-
-resource "google_service_account_iam_policy" "admin-account-iam" {
-  service_account_id = google_service_account.sa.name
-  policy_data        = data.google_iam_policy.admin.policy_data
-}
-
-
-
 
 
 output "ip" {
